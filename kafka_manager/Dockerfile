@@ -1,0 +1,1 @@
+FROM hlebalbau/kafka-manager:stable

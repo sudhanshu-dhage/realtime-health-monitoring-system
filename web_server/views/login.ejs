@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Health Monitoring System</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+	</script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="./css/main.css">
+
+	<script type="text/javascript">
+		$(document).ready( () => {
+
+			$( "#form" ).submit( (event) => {
+				event.preventDefault();
+
+				$.ajax({
+					type: 'POST',
+					url: '/login',
+					data: $('#form').serialize(),
+					dataType: "json",
+					success: (response) => {
+						//alert("a");
+						//console.log(response.Success);
+						$('#form')[0].reset();
+
+						document.getElementById("check").innerHTML=response.Success;
+         					//ADD THIS CODE
+         					setTimeout( () => {
+         						document.getElementById("check").innerHTML="";
+         					},3000);
+         					if (response.Success=="Success!") {
+         						document.getElementById("aa").click();
+         					};
+         				},
+         				error: () => {
+         				}
+         			})
+			});
+
+		});
+	</script>
+
+
+	<style>
+		body{
+	text-align: center !important;
+}
+p{
+	margin-top: 20px;
+	font-size: 30px;
+}
+input{
+	text-align: center;
+}
+	</style>
+</head>
+<body>
+
+	<span style="position: relative; z-index: 1;">
+    </span>
+	<div class="container inner">
+		<div class="eight columns" style="margin-top: 50px;">
+		  <h1 style="color: white; font-size: 72px; "> Health Monitoring System </h1>
+		  <h3 style="color: white;"> An intelligent and highly customizable monitoring system</h3>
+		  
+		</div>
+	  </div>
+	  
+	<!-- script file for vanta.js -->
+
+	<script type="text/javascript" src=".\js\three.r95.min.js"></script>
+	<script type="text/javascript" src=".\js\vanta.net.min.js"></script>
+
+	<script>
+	VANTA.NET({
+		el: "body",
+		mouseControls: true,
+		touchControls: true,
+		minHeight: 753.0,
+		minWidth: 1000.0,
+		scale: 1.0,
+		scaleMobile: 1.0,
+	});
+	</script>
+    
+	
+
+
+	<div class="col-md-4 col-md-offset-4 form-cardlogin">
+		<div>
+			<p>Login</p>
+		</div>
+		<div class="form-group ">
+			<form id="form" method="post" >
+				<input type="text" name="email" placeholder="E-mail" required="" class="form-control"><br/>
+				<input type="password" name="password" placeholder="Password" required="" class="form-control"><br/>
+				<input type="submit" value="Login" class="btn btn-success">
+			</form>
+		</div>
+		<div class="mssg bg-danger">
+			<span id="check" ></span>
+		</div>
+		<div id="LangTable"><a href="/profile" id="aa"></a>
+		</div>
+		<div><span>Do you forgot password? </span><a href="/forgetpass">click here</a>
+		</div>
+		<div id="LangTable"><span>Do you want to register a new Account? </span><a href="/">click here</a>
+		</div>
+	</div>
+</body>
+</html>

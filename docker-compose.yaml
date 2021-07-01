@@ -1,0 +1,125 @@
+version: "3.3"
+services:
+  zookeeper:
+    build: ./zookeeper
+    restart: always
+    container_name: zookeeper
+    hostname: zookeeper
+    ports:
+      - 2181:2181
+    environment:
+      ZOO_MY_ID: 1
+
+  kafka:
+    build: ./kafka
+    container_name: kafka
+    restart: always
+    ports:
+    - 9092:9092
+    - 1099:1099
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_BROKER_ID: 1
+      KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote=true 
+                       -Dcom.sun.management.jmxremote.authenticate=false 
+                       -Dcom.sun.management.jmxremote.ssl=false 
+                       -Djava.rmi.server.hostname=kafka 
+                       -Dcom.sun.management.jmxremote.rmi.port=1099 
+                       -Djava.net.preferIPv4Stack=true"
+      JMX_PORT: 1099
+    depends_on: 
+      - zookeeper
+        
+  kafka_manager:
+    build: ./kafka_manager
+    container_name: kakfa-manager
+    restart: always
+    ports:
+      - "9000:9000"
+    environment:
+      ZK_HOSTS: "zookeeper:2181"
+      APPLICATION_SECRET: "random-secret"
+    command: -Dpidfile.path=/dev/null
+    depends_on: 
+      - kafka
+
+  logstash:
+    build: ./logstash
+    container_name: logstash
+    restart: always
+    ports: 
+      - 5044:5044
+      - 9600:9600
+    depends_on: 
+      - kafka
+
+  elasticsearch:
+    build: ./elasticsearch
+    container_name: elasticsearch
+    restart: always
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    depends_on: 
+      - logstash
+    
+
+  kibana:
+    build: ./kibana
+    container_name: kibana
+    restart: always
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200    # address of elasticsearch docker container which kibana will connect
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch                                   # kibana will start when elasticsearch has started
+
+  jupyter:
+    build: ./jupyter
+    container_name: jupyter
+    restart: always
+    ports: 
+        - 8888:8888
+        - 4040:4040
+    depends_on: 
+        - kafka
+
+  producer:
+    build: ./producer
+    container_name: producer
+    restart: always
+    depends_on: 
+      - kafka
+
+  web_server:
+    build: ./web_server
+    container_name: web_server
+    ports:
+      - 3000:3000
+    depends_on:
+      - mongodb
+
+  mongodb:
+    build: ./mongodb
+    container_name: mongodb
+    ports:
+      - 27017:27017
+
+volumes:
+  elasticsearch-data:

@@ -1,0 +1,22 @@
+
+.form-cardlogin{
+    background-color: #f8e2e9;
+    border-radius: 10px;
+    margin-top: 100px;
+}
+.form-cardregister{
+    background-color: #f8e2e9;
+    border-radius: 10px;
+    margin-top: 100px;
+}
+.form-cardforget{
+    background-color: #f8e2e9;
+    border-radius: 10px;
+    margin-top: 100px;
+}
+
+.mssg{
+	margin-top: 5px;
+	margin-bottom: 5px;
+	border-radius: 5px;
+}
